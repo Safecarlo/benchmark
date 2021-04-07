@@ -1,0 +1,20 @@
+#+TITLE: Benchmark testing vector implementation of vector operator in verificarlo
+#+AUTHOR: Sholde
+#+DATE: April 2021
+
+#+TOC: tables
+
+* Tools
+
+  - verificarlo
+  - make
+  - gnuplot
+
+* Usage
+
+#+BEGIN_SRC shell
+$ ./run.sh
+$ gnuplot plot.gp > output.png
+#+END_SRC
+
+* Benchmark
