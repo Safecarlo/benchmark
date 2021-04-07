@@ -21,7 +21,7 @@ set xtic rotate by -45 scale 0
 
 #set multiplot layout 2, 2 rowsfirst
 
-set yrange[0:2500]
+set yrange[0:]
 
 set title "Vector implementation"
 plot "ieee_perf" u 2:xtic(1) t "IEEE Backend", "vprec_perf" u 2:xtic(1) t "VPREC Backend"

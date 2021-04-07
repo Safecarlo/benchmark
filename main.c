@@ -22,7 +22,7 @@ void run_add_float(void)
   struct timespec before, after;
 
   //
-  int number_of_ite = N_MAX;
+  double number_of_ite = N_MAX;
 
   //
   for (int i = 0; i < number_of_ite; i++)
@@ -45,7 +45,7 @@ void run_add_float(void)
     }
 
   // Mean
-  double mean_time = total_time / number_of_ite;
+  double mean_time = total_time / N_MAX;
 
   // Nanosecond to second
   double mean_time_sec = mean_time / 1.0e9;
@@ -74,7 +74,7 @@ void run_add_float2(void)
   struct timespec before, after;
 
   //
-  int number_of_ite = N_MAX / 2;
+  double number_of_ite = N_MAX / 2;
 
   //
   for (int i = 0; i < number_of_ite; i++)
@@ -97,7 +97,7 @@ void run_add_float2(void)
     }
 
   // Mean
-  double mean_time = total_time / number_of_ite;
+  double mean_time = total_time / N_MAX;
 
   // Nanosecond to second
   double mean_time_sec = mean_time / 1.0e9;
@@ -126,7 +126,7 @@ void run_add_float4(void)
   struct timespec before, after;
 
   //
-  int number_of_ite = N_MAX / 4;
+  double number_of_ite = N_MAX / 4;
 
   //
   for (int i = 0; i < number_of_ite; i++)
@@ -149,7 +149,7 @@ void run_add_float4(void)
     }
 
   // Mean
-  double mean_time = total_time / number_of_ite;
+  double mean_time = total_time / N_MAX;
 
   // Nanosecond to second
   double mean_time_sec = mean_time / 1.0e9;
@@ -178,7 +178,7 @@ void run_add_float8(void)
   struct timespec before, after;
 
   //
-  int number_of_ite = N_MAX / 8;
+  double number_of_ite = N_MAX / 8;
 
   //
   for (int i = 0; i < number_of_ite; i++)
@@ -201,7 +201,7 @@ void run_add_float8(void)
     }
 
   // Mean
-  double mean_time = total_time / number_of_ite;
+  double mean_time = total_time / N_MAX;
 
   // Nanosecond to second
   double mean_time_sec = mean_time / 1.0e9;
