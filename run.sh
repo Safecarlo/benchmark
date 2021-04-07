@@ -11,12 +11,10 @@ export VFC_BACKENDS_SILENT_LOAD="True"
 export VFC_BACKENDS_LOGGER="False"
 
 # ieee
-echo "ieee performance:"
-VFC_BACKENDS="libinterflop_ieee.so" taskset -c 3 ./main
+VFC_BACKENDS="libinterflop_ieee.so" taskset -c 3 ./main 2> ieee_perf
 
 # vprec
-echo "vprec performance:"
-VFC_BACKENDS="libinterflop_vprec.so" taskset -c 3 ./main 
+VFC_BACKENDS="libinterflop_vprec.so" taskset -c 3 ./main 2> vprec_perf
 
 # reset verificarlo option
 export VFC_BACKENDS_SILENT_LOAD="False"
