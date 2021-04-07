@@ -1,0 +1,7 @@
+*~
+*.o
+*.vfc
+main
+
+*.png
+*_perf
