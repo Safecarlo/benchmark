@@ -19,11 +19,20 @@ set boxwidth 0.9
 
 set xtic rotate by -45 scale 0
 
-#set multiplot layout 2, 2 rowsfirst
+set multiplot layout 2, 2 rowsfirst
 
-set yrange[0:]
+set yrange[0:14000]
+
+set title "Scalar implementation"
+plot "scalar_ieee_perf" u 2:xtic(1) t "IEEE Backend", "scalar_vprec_perf" u 2:xtic(1) t "VPREC Backend"
 
 set title "Vector implementation"
-plot "ieee_perf" u 2:xtic(1) t "IEEE Backend", "vprec_perf" u 2:xtic(1) t "VPREC Backend"
+plot "vector_ieee_perf" u 2:xtic(1) t "IEEE Backend", "vector_vprec_perf" u 2:xtic(1) t "VPREC Backend"
+
+set title "IEEE Backend"
+plot "scalar_ieee_perf" u 2:xtic(1) t "Scalar implementation", "vector_ieee_perf" u 2:xtic(1) t "Vector implementation"
+
+set title "VPREC Backend"
+plot "scalar_vprec_perf" u 2:xtic(1) t "Scalar implementation", "vector_vprec_perf" u 2:xtic(1) t "Vector implementation"
 
 unset multiplot
