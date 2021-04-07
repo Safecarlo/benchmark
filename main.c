@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 #include "rdtsc.h"
 
@@ -8,111 +9,219 @@ typedef float float2 __attribute__((ext_vector_type(2)));
 typedef float float4 __attribute__((ext_vector_type(4)));
 typedef float float8 __attribute__((ext_vector_type(8)));
 
-void run_addition(void)
+void run_add_float(void)
 {
+  //
   float a = 1.0;
   float b = 1.0;
   float c = 0.0;
 
-  double start, end, final = 0;
+  //
+  double total_time = 0.0;
+  double elapsed = 0.0;
+  struct timespec before, after;
 
-  for (int i = 0; i < N_MAX; i++)
+  //
+  int number_of_ite = N_MAX;
+
+  //
+  for (int i = 0; i < number_of_ite; i++)
     {
-      start = rdtsc();
+      //
+      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
       {
         c = a + b;
       }
-      end = rdtsc();
-      
-      if (start < end)
-        final += end - start;
-      else
+      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
+
+      //
+      elapsed = after.tv_nsec - before.tv_nsec;
+
+      // Check
+      if (elapsed < 0.0)
         i--;
+      else
+        total_time += elapsed;
     }
 
-  fprintf(stderr, "addition;  float; %f\n", final);
+  // Mean
+  double mean_time = total_time / number_of_ite;
+
+  // Nanosecond to second
+  double mean_time_sec = mean_time / 1.0e9;
+
+  // Compote size
+  double total_size = 3 * sizeof(float) * number_of_ite;
+  double total_size_gib = total_size / (1024 * 1024 * 1024);
+
+  // Compute gibs
+  double gibs = total_size_gib / mean_time_sec;
+
+  // Print bandwidth
+  fprintf(stderr, "add_float; %f\n", gibs);
 }
 
-void run_addition_2x(void)
+void run_add_float2(void)
 {
+  //
   float2 a = 1.0;
   float2 b = 1.0;
   float2 c = 0.0;
 
-  double start, end, final = 0;
+  //
+  double total_time = 0.0;
+  double elapsed = 0.0;
+  struct timespec before, after;
 
-  for (int i = 0; i < N_MAX / 2; i++)
+  //
+  int number_of_ite = N_MAX / 2;
+
+  //
+  for (int i = 0; i < number_of_ite; i++)
     {
-      start = rdtsc();
+      //
+      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
       {
         c = a + b;
       }
-      end = rdtsc();
-      
-      if (start < end)
-        final += end - start;
-      else
+      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
+
+      //
+      elapsed = after.tv_nsec - before.tv_nsec;
+
+      // Check
+      if (elapsed < 0.0)
         i--;
+      else
+        total_time += elapsed;
     }
 
-  fprintf(stderr, "addition; float2; %f\n", final);
+  // Mean
+  double mean_time = total_time / number_of_ite;
+
+  // Nanosecond to second
+  double mean_time_sec = mean_time / 1.0e9;
+
+  // Compote size
+  double total_size = 3 * sizeof(float2) * number_of_ite;
+  double total_size_gib = total_size / (1024 * 1024 * 1024);
+
+  // Compute gibs
+  double gibs = total_size_gib / mean_time_sec;
+
+  // Print bandwidth
+  fprintf(stderr, "add_float2; %f\n", gibs);
 }
 
-void run_addition_4x(void)
+void run_add_float4(void)
 {
+  //
   float4 a = 1.0;
   float4 b = 1.0;
   float4 c = 0.0;
 
-  double start, end, final = 0;
+  //
+  double total_time = 0.0;
+  double elapsed = 0.0;
+  struct timespec before, after;
 
-  for (int i = 0; i < N_MAX / 4; i++)
+  //
+  int number_of_ite = N_MAX / 4;
+
+  //
+  for (int i = 0; i < number_of_ite; i++)
     {
-      start = rdtsc();
+      //
+      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
       {
         c = a + b;
       }
-      end = rdtsc();
-      
-      if (start < end)
-        final += end - start;
-      else
+      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
+
+      //
+      elapsed = after.tv_nsec - before.tv_nsec;
+
+      // Check
+      if (elapsed < 0.0)
         i--;
+      else
+        total_time += elapsed;
     }
 
-  fprintf(stderr, "addition; float4; %f\n", final);
+  // Mean
+  double mean_time = total_time / number_of_ite;
+
+  // Nanosecond to second
+  double mean_time_sec = mean_time / 1.0e9;
+
+  // Compote size
+  double total_size = 3 * sizeof(float4) * number_of_ite;
+  double total_size_gib = total_size / (1024 * 1024 * 1024);
+
+  // Compute gibs
+  double gibs = total_size_gib / mean_time_sec;
+
+  // Print bandwidth
+  fprintf(stderr, "add_float4; %f\n", gibs);
 }
 
-void run_addition_8x(void)
+void run_add_float8(void)
 {
+  //
   float8 a = 1.0;
   float8 b = 1.0;
   float8 c = 0.0;
 
-  double start, end, final = 0;
+  //
+  double total_time = 0.0;
+  double elapsed = 0.0;
+  struct timespec before, after;
 
-  for (int i = 0; i < N_MAX / 8; i++)
+  //
+  int number_of_ite = N_MAX / 8;
+
+  //
+  for (int i = 0; i < number_of_ite; i++)
     {
-      start = rdtsc();
+      //
+      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
       {
         c = a + b;
       }
-      end = rdtsc();
-      
-      if (start < end)
-        final += end - start;
-      else
+      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
+
+      //
+      elapsed = after.tv_nsec - before.tv_nsec;
+
+      // Check
+      if (elapsed < 0.0)
         i--;
+      else
+        total_time += elapsed;
     }
 
-  fprintf(stderr, "addition; float8; %f\n", final);
+  // Mean
+  double mean_time = total_time / number_of_ite;
+
+  // Nanosecond to second
+  double mean_time_sec = mean_time / 1.0e9;
+
+  // Compote size
+  double total_size = 3 * sizeof(float8) * number_of_ite;
+  double total_size_gib = total_size / (1024 * 1024 * 1024);
+
+  // Compute gibs
+  double gibs = total_size_gib / mean_time_sec;
+
+  // Print bandwidth
+  fprintf(stderr, "add_float8; %f\n", gibs);
 }
 
 int main(int argc, char **argv)
 {
-  run_addition();
-  run_addition_2x();
-  run_addition_4x();
-  run_addition_8x();  
+  run_add_float();
+  run_add_float2();
+  run_add_float4();
+  run_add_float8();
   return 0;
 }
