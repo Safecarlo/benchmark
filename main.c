@@ -105,7 +105,7 @@ void run_addition_8x(void)
         i--;
     }
 
-  fprintf(stderr, "addition; float4; %f\n", final);
+  fprintf(stderr, "addition; float8; %f\n", final);
 }
 
 int main(int argc, char **argv)
