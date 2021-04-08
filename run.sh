@@ -10,11 +10,19 @@ make
 export VFC_BACKENDS_SILENT_LOAD="True"
 export VFC_BACKENDS_LOGGER="False"
 
-# ieee
-VFC_BACKENDS="libinterflop_ieee.so" taskset -c 3 ./main 2> ieee_perf
+# normal
+## ieee
+VFC_BACKENDS="libinterflop_ieee.so" taskset -c 3 ./main "n" 2> ieee_perf_normal
 
-# vprec
-VFC_BACKENDS="libinterflop_vprec.so" taskset -c 3 ./main 2> vprec_perf
+## vprec
+VFC_BACKENDS="libinterflop_vprec.so" taskset -c 3 ./main "n" 2> vprec_perf_normal
+
+# denormal
+## ieee
+VFC_BACKENDS="libinterflop_ieee.so" taskset -c 3 ./main "d" 2> ieee_perf_denormal
+
+## vprec
+VFC_BACKENDS="libinterflop_vprec.so" taskset -c 3 ./main "d" 2> vprec_perf_denormal
 
 # reset verificarlo option
 export VFC_BACKENDS_SILENT_LOAD="False"
