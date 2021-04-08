@@ -25,24 +25,26 @@ void run_add_float(void)
   double number_of_ite = N_MAX;
 
   //
-  for (int i = 0; i < number_of_ite; i++)
+  do
     {
       //
       clock_gettime(CLOCK_MONOTONIC_RAW, &before);
       {
-        c = a + b;
+        for (int i = 0; i < number_of_ite; i++)
+          {
+            c = a + b;
+          }
       }
       clock_gettime(CLOCK_MONOTONIC_RAW, &after);
 
       //
       elapsed = after.tv_nsec - before.tv_nsec;
 
-      // Check
-      if (elapsed < 0.0)
-        i--;
-      else
-        total_time += elapsed;
     }
+  while (elapsed < 0.0);
+
+  //
+  total_time = elapsed;
 
   // Mean
   double mean_time = total_time / N_MAX;
@@ -77,24 +79,26 @@ void run_add_float2(void)
   double number_of_ite = N_MAX / 2;
 
   //
-  for (int i = 0; i < number_of_ite; i++)
+  do
     {
       //
       clock_gettime(CLOCK_MONOTONIC_RAW, &before);
       {
-        c = a + b;
+        for (int i = 0; i < number_of_ite; i++)
+          {
+            c = a + b;
+          }
       }
       clock_gettime(CLOCK_MONOTONIC_RAW, &after);
 
       //
       elapsed = after.tv_nsec - before.tv_nsec;
 
-      // Check
-      if (elapsed < 0.0)
-        i--;
-      else
-        total_time += elapsed;
     }
+  while (elapsed < 0.0);
+
+  //
+  total_time = elapsed;
 
   // Mean
   double mean_time = total_time / N_MAX;
@@ -129,24 +133,26 @@ void run_add_float4(void)
   double number_of_ite = N_MAX / 4;
 
   //
-  for (int i = 0; i < number_of_ite; i++)
+  do
     {
       //
       clock_gettime(CLOCK_MONOTONIC_RAW, &before);
       {
-        c = a + b;
+        for (int i = 0; i < number_of_ite; i++)
+          {
+            c = a + b;
+          }
       }
       clock_gettime(CLOCK_MONOTONIC_RAW, &after);
 
       //
       elapsed = after.tv_nsec - before.tv_nsec;
 
-      // Check
-      if (elapsed < 0.0)
-        i--;
-      else
-        total_time += elapsed;
     }
+  while (elapsed < 0.0);
+
+  //
+  total_time = elapsed;
 
   // Mean
   double mean_time = total_time / N_MAX;
@@ -181,24 +187,26 @@ void run_add_float8(void)
   double number_of_ite = N_MAX / 8;
 
   //
-  for (int i = 0; i < number_of_ite; i++)
+  do
     {
       //
       clock_gettime(CLOCK_MONOTONIC_RAW, &before);
       {
-        c = a + b;
+        for (int i = 0; i < number_of_ite; i++)
+          {
+            c = a + b;
+          }
       }
       clock_gettime(CLOCK_MONOTONIC_RAW, &after);
 
       //
       elapsed = after.tv_nsec - before.tv_nsec;
 
-      // Check
-      if (elapsed < 0.0)
-        i--;
-      else
-        total_time += elapsed;
     }
+  while (elapsed < 0.0);
+
+  //
+  total_time = elapsed;
 
   // Mean
   double mean_time = total_time / N_MAX;
