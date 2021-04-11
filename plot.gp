@@ -19,20 +19,43 @@ set boxwidth 0.9
 
 set xtic rotate by -45 scale 0
 
+set output "ieee.png"
 set multiplot layout 2, 2 rowsfirst
 
-set yrange[0:30000]
+set yrange[0:]
 
-set title "IEEE Backend with normal number"
-plot "serial_ieee_perf_normal" u 2:xtic(1) t "Serial implementation", "vector_ieee_perf_normal" u 2:xtic(1) t "Vector implementation"
+set title "IEEE Backend"
+plot "serial_ieee_perf.txt" u 2:xtic(1) t "Serial implementation", "vector_ieee_perf.txt" u 2:xtic(1) t "Vector implementation"
+plot "serial_ieee_speedup.txt" u 2:xtic(1) t "Serial implementation", "vector_ieee_speedup.txt" u 2:xtic(1) t "Vector implementation"
 
-set title "VPREC Backend with normal number"
-plot "serial_vprec_perf_normal" u 2:xtic(1) t "Serial implementation", "vector_vprec_perf_normal" u 2:xtic(1) t "Vector implementation"
+unset multiplot
 
-set title "IEEE Backend with denormal number"
-plot "serial_ieee_perf_denormal" u 2:xtic(1) t "Serial implementation", "vector_ieee_perf_denormal" u 2:xtic(1) t "Vector implementation"
+set output "vprec_default.png"
+set multiplot layout 2, 2 rowsfirst
 
-set title "VPREC Backend with denormal number"
-plot "serial_vprec_perf_denormal" u 2:xtic(1) t "Serial implementation", "vector_vprec_perf_denormal" u 2:xtic(1) t "Vector implementation"
+set yrange[0:]
+
+set title "VPREC Backend with normal number and default setting"
+plot "serial_vprec_normal_perf.txt" u 2:xtic(1) t "Serial implementation", "vector_vprec_normal_perf.txt" u 2:xtic(1) t "Vector implementation"
+plot "serial_vprec_normal_speedup.txt" u 2:xtic(1) t "Serial implementation", "vector_vprec_normal_speedup.txt" u 2:xtic(1) t "Vector implementation"
+
+set title "VPREC Backend with denormal number and default setting"
+plot "serial_vprec_denormal_perf.txt" u 2:xtic(1) t "Serial implementation", "vector_vprec_denormal_perf.txt" u 2:xtic(1) t "Vector implementation"
+plot "serial_vprec_denormal_speedup.txt" u 2:xtic(1) t "Serial implementation", "vector_vprec_denormal_speedup.txt" u 2:xtic(1) t "Vector implementation"
+
+unset multiplot
+
+set output "vprec_full.png"
+set multiplot layout 2, 2 rowsfirst
+
+set yrange[0:]
+
+set title "VPREC Backend with normal number and full mode"
+plot "serial_vprec_normal_perf.txt" u 2:xtic(1) t "Serial implementation", "vector_vprec_normal_perf.txt" u 2:xtic(1) t "Vector implementation"
+plot "serial_vprec_normal_speedup.txt" u 2:xtic(1) t "Serial implementation", "vector_vprec_normal_speedup.txt" u 2:xtic(1) t "Vector implementation"
+
+set title "VPREC Backend with denormal number and full mode"
+plot "serial_vprec_denormal_perf.txt" u 2:xtic(1) t "Serial implementation", "vector_vprec_denormal_perf.txt" u 2:xtic(1) t "Vector implementation"
+plot "serial_vprec_denormal_speedup.txt" u 2:xtic(1) t "Serial implementation", "vector_vprec_denormal_speedup.txt" u 2:xtic(1) t "Vector implementation"
 
 unset multiplot
