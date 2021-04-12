@@ -2,6 +2,7 @@
 *.o
 *.vfc
 main
+compute
 
 *.png
-*_perf
+*.txt
