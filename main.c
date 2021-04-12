@@ -247,9 +247,9 @@ int main(int argc, char **argv)
   double gibs_4x = run_add_float4(x, y);
   double gibs_8x = run_add_float8(x, y);
 
-  fprintf(stderr, "speedup_2x; %f\n", gibs_2x / baseline);
-  fprintf(stderr, "speedup_4x; %f\n", gibs_4x / baseline);
-  fprintf(stderr, "speedup_8x; %f\n", gibs_8x / baseline);
+  fprintf(stderr, "add_float2; %f\n", gibs_2x / baseline);
+  fprintf(stderr, "add_float4; %f\n", gibs_4x / baseline);
+  fprintf(stderr, "add_float8; %f\n", gibs_8x / baseline);
 
   return 0;
 }
