@@ -11,10 +11,44 @@
   - gnuplot
 
 * Usage
+** Downloading
+
+#+BEGIN_SRC shell
+$ git clone https://github.com/Safecarlo/benchmark.git
+$ cd benchmark
+#+END_SRC
+
+** Run on master branch
+
+   You must ensure that you have the Verificarlo version on *master branch*.
 
 #+BEGIN_SRC shell
 $ ./run.sh
-$ gnuplot plot.gp > output.png
+$ ./prefix.sh serial
+#+END_SRC
+
+** Run on vector branch
+
+   You must ensure that you have the Verificarlo version on *vectorisation
+   branch in Safecarlo*.
+
+#+BEGIN_SRC shell
+$ ./run.sh
+$ ./prefix.sh vector
+#+END_SRC
+
+** Speedup
+
+   Now you can compute speedup.
+
+#+BEGIN_SRC shell
+$ ./sp.sh
+#+END_SRC
+
+** Plotting
+
+#+BEGIN_SRC shell
+$ gnuplot plot.gp
 #+END_SRC
 
 * Benchmark
