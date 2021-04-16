@@ -16,6 +16,8 @@ set boxwidth 0.9
 
 set xtic rotate by -45 scale 0
 
+# IEEE BACKEND
+
 set output "ieee.png"
 set multiplot layout 2, 2 rowsfirst
 
@@ -35,6 +37,8 @@ plot "serial_ieee_speedup.txt" u 2:xtic(1) t "Serial implementation",          \
      "ieee_speedup.txt" u 2:xtic(1) t "Vector / Serial"
 
 unset multiplot
+
+# VPREC DEFAULT
 
 set output "vprec_default.png"
 set multiplot layout 2, 2 rowsfirst
@@ -71,6 +75,8 @@ plot "serial_vprec_denormal_speedup.txt" u 2:xtic(1) t "Serial implementation",\
 
 unset multiplot
 
+# VPREC FULL
+
 set output "vprec_full.png"
 set multiplot layout 2, 2 rowsfirst
 
@@ -79,8 +85,8 @@ set title "VPREC Backend with normal number and full mode"
 set yrange[0:16000]
 
 set ylabel "Bandwidth in Giga Bits Per Second (higher is better)"
-plot "serial_vprec_normal_perf.txt" u 2:xtic(1) t "Serial implementation",     \
-     "vector_vprec_normal_perf.txt" u 2:xtic(1) t "Vector implementation"
+plot "serial_vprec_full_normal_perf.txt" u 2:xtic(1) t "Serial implementation",     \
+     "vector_vprec_full_normal_perf.txt" u 2:xtic(1) t "Vector implementation"
 
 set yrange[0:5]
 
@@ -94,8 +100,8 @@ set title "VPREC Backend with denormal number and full mode"
 set yrange[0:16000]
 
 set ylabel "Bandwidth in Giga Bits Per Second (higher is better)"
-plot "serial_vprec_denormal_perf.txt" u 2:xtic(1) t "Serial implementation",   \
-     "vector_vprec_denormal_perf.txt" u 2:xtic(1) t "Vector implementation"
+plot "serial_vprec_full_denormal_perf.txt" u 2:xtic(1) t "Serial implementation",   \
+     "vector_vprec_full_denormal_perf.txt" u 2:xtic(1) t "Vector implementation"
 
 set yrange[0:5]
 

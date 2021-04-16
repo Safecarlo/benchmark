@@ -1,5 +1,5 @@
 CC=verificarlo-c
-OFLAGS=-O0 -march=native
+OFLAGS=-O0 -march=native -fno-unroll-loops
 
 .PHONY: all clean
 
