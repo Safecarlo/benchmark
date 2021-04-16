@@ -10,229 +10,158 @@ typedef float float2 __attribute__((ext_vector_type(2)));
 typedef float float4 __attribute__((ext_vector_type(4)));
 typedef float float8 __attribute__((ext_vector_type(8)));
 
-double run_add_float(double x, double y)
-{
-  //
-  float a = (float)x;
-  float b = (float)y;
-  float c = 0.0;
+#define define_run_op_float(op, name)                                          \
+  double run_##name##_float(double x, double y)                                \
+  {                                                                            \
+    /* */                                                                      \
+    float a = (float)x;                                                        \
+    float b = (float)y;                                                        \
+    float c = 0.0;                                                             \
+                                                                               \
+    /* */                                                                      \
+    double total_time = 0.0;                                                   \
+    double elapsed = 0.0;                                                      \
+    struct timespec before, after;                                             \
+                                                                               \
+    /* */                                                                      \
+    double number_of_ite = N_MAX;                                              \
+                                                                               \
+    /* */                                                                      \
+    do                                                                         \
+      {                                                                        \
+        /* */                                                                  \
+        clock_gettime(CLOCK_MONOTONIC_RAW, &before);                           \
+        {                                                                      \
+          for (int i = 0; i < number_of_ite; i++)                              \
+            {                                                                  \
+              c = a op b;                                                      \
+            }                                                                  \
+        }                                                                      \
+        clock_gettime(CLOCK_MONOTONIC_RAW, &after);                            \
+                                                                               \
+        /* */                                                                  \
+        elapsed = after.tv_nsec - before.tv_nsec;                              \
+                                                                               \
+      }                                                                        \
+    while (elapsed < 0.0);                                                     \
+                                                                               \
+    /* */                                                                      \
+    total_time = elapsed;                                                      \
+                                                                               \
+    /* Mean */                                                                 \
+    double mean_time = total_time / N_MAX;                                     \
+                                                                               \
+    /* Nanosecond to second */                                                 \
+    double mean_time_sec = mean_time / 1.0e9;                                  \
+                                                                               \
+    /* Compute size */                                                         \
+    double total_size = 3 * sizeof(float) * number_of_ite;                     \
+    double total_size_gib = total_size / (1024 * 1024 * 1024);                 \
+                                                                               \
+    /* Compute gibs */                                                         \
+    double gibs = total_size_gib / mean_time_sec;                              \
+                                                                               \
+    /* Print bandwidth */                                                      \
+    fprintf(stderr, "%s_float; %f\n", #name, gibs);                            \
+                                                                               \
+    return gibs;                                                               \
+  }
 
-  //
-  double total_time = 0.0;
-  double elapsed = 0.0;
-  struct timespec before, after;
+define_run_op_float(+, add);
+define_run_op_float(-, sub);
+define_run_op_float(*, mul);
+define_run_op_float(/, div);
 
-  //
-  double number_of_ite = N_MAX;
+#define define_run_op_floatX(size, op, name)                                   \
+  double run_##name##_float##size(double x, double y)                          \
+  {                                                                            \
+    /* */                                                                      \
+    float##size a = (float)x;                                                  \
+    float##size b = (float)y;                                                  \
+    float##size c = 0.0;                                                       \
+                                                                               \
+    /* */                                                                      \
+    double total_time = 0.0;                                                   \
+    double elapsed = 0.0;                                                      \
+    struct timespec before, after;                                             \
+                                                                               \
+    /* */                                                                      \
+    double number_of_ite = N_MAX / size;                                       \
+                                                                               \
+    /* */                                                                      \
+    do                                                                         \
+      {                                                                        \
+        /* */                                                                  \
+        clock_gettime(CLOCK_MONOTONIC_RAW, &before);                           \
+        {                                                                      \
+          for (int i = 0; i < number_of_ite; i++)                              \
+            {                                                                  \
+              c = a op b;                                                      \
+            }                                                                  \
+        }                                                                      \
+        clock_gettime(CLOCK_MONOTONIC_RAW, &after);                            \
+                                                                               \
+        /* */                                                                  \
+        elapsed = after.tv_nsec - before.tv_nsec;                              \
+                                                                               \
+      }                                                                        \
+    while (elapsed < 0.0);                                                     \
+                                                                               \
+    /* */                                                                      \
+    total_time = elapsed;                                                      \
+                                                                               \
+    /* Mean */                                                                 \
+    double mean_time = total_time / N_MAX;                                     \
+                                                                               \
+    /* Nanosecond to second */                                                 \
+    double mean_time_sec = mean_time / 1.0e9;                                  \
+                                                                               \
+    /* Compute size */                                                         \
+    double total_size = 3 * sizeof(float##size) * number_of_ite;               \
+    double total_size_gib = total_size / (1024 * 1024 * 1024);                 \
+                                                                               \
+    /* Compute gibs */                                                         \
+    double gibs = total_size_gib / mean_time_sec;                              \
+                                                                               \
+    /* Print bandwidth */                                                      \
+    fprintf(stderr, "%s_float%d; %f\n", #name, size, gibs);                    \
+                                                                               \
+    return gibs;                                                               \
+  }
 
-  //
-  do
-    {
-      //
-      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
-      {
-        for (int i = 0; i < number_of_ite; i++)
-          {
-            c = a + b;
-          }
-      }
-      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
+define_run_op_floatX(2, +, add);
+define_run_op_floatX(4, +, add);
+define_run_op_floatX(8, +, add);
 
-      //
-      elapsed = after.tv_nsec - before.tv_nsec;
+define_run_op_floatX(2, -, sub);
+define_run_op_floatX(4, -, sub);
+define_run_op_floatX(8, -, sub);
 
-    }
-  while (elapsed < 0.0);
+define_run_op_floatX(2, *, mul);
+define_run_op_floatX(4, *, mul);
+define_run_op_floatX(8, *, mul);
 
-  //
-  total_time = elapsed;
+define_run_op_floatX(2, /, div);
+define_run_op_floatX(4, /, div);
+define_run_op_floatX(8, /, div);
 
-  // Mean
-  double mean_time = total_time / N_MAX;
+#define define_speedup(name)                                            \
+  void speedup_##name(x, y)                                             \
+  {                                                                     \
+    double baseline = run_##name##_float(x, y);                         \
+    double gibs_2x = run_##name##_float2(x, y);                         \
+    double gibs_4x = run_##name##_float4(x, y);                         \
+    double gibs_8x = run_##name##_float8(x, y);                         \
+                                                                        \
+    fprintf(stderr, "%s_float2; %f\n", #name, gibs_2x / baseline);      \
+    fprintf(stderr, "%s_float4; %f\n", #name, gibs_4x / baseline);      \
+    fprintf(stderr, "%s_float8; %f\n", #name, gibs_8x / baseline);      \
+  }
 
-  // Nanosecond to second
-  double mean_time_sec = mean_time / 1.0e9;
-
-  // Compute size
-  double total_size = 3 * sizeof(float) * number_of_ite;
-  double total_size_gib = total_size / (1024 * 1024 * 1024);
-
-  // Compute gibs
-  double gibs = total_size_gib / mean_time_sec;
-
-  // Print bandwidth
-  fprintf(stderr, "add_float; %f\n", gibs);
-
-  return gibs;
-}
-
-double run_add_float2(double x, double y)
-{
-  //
-  float2 a = (float)x;
-  float2 b = (float)y;
-  float2 c = 0.0;
-
-  //
-  double total_time = 0.0;
-  double elapsed = 0.0;
-  struct timespec before, after;
-
-  //
-  double number_of_ite = N_MAX / 2;
-
-  //
-  do
-    {
-      //
-      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
-      {
-        for (int i = 0; i < number_of_ite; i++)
-          {
-            c = a + b;
-          }
-      }
-      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
-
-      //
-      elapsed = after.tv_nsec - before.tv_nsec;
-
-    }
-  while (elapsed < 0.0);
-
-  //
-  total_time = elapsed;
-
-  // Mean
-  double mean_time = total_time / N_MAX;
-
-  // Nanosecond to second
-  double mean_time_sec = mean_time / 1.0e9;
-
-  // Compute size
-  double total_size = 3 * sizeof(float2) * number_of_ite;
-  double total_size_gib = total_size / (1024 * 1024 * 1024);
-
-  // Compute gibs
-  double gibs = total_size_gib / mean_time_sec;
-
-  // Print bandwidth
-  fprintf(stderr, "add_float2; %f\n", gibs);
-
-  return gibs;
-}
-
-double run_add_float4(double x, double y)
-{
-  //
-  float4 a = (float)x;
-  float4 b = (float)y;
-  float4 c = 0.0;
-
-  //
-  double total_time = 0.0;
-  double elapsed = 0.0;
-  struct timespec before, after;
-
-  //
-  double number_of_ite = N_MAX / 4;
-
-  //
-  do
-    {
-      //
-      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
-      {
-        for (int i = 0; i < number_of_ite; i++)
-          {
-            c = a + b;
-          }
-      }
-      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
-
-      //
-      elapsed = after.tv_nsec - before.tv_nsec;
-
-    }
-  while (elapsed < 0.0);
-
-  //
-  total_time = elapsed;
-
-  // Mean
-  double mean_time = total_time / N_MAX;
-
-  // Nanosecond to second
-  double mean_time_sec = mean_time / 1.0e9;
-
-  // Compute size
-  double total_size = 3 * sizeof(float4) * number_of_ite;
-  double total_size_gib = total_size / (1024 * 1024 * 1024);
-
-  // Compute gibs
-  double gibs = total_size_gib / mean_time_sec;
-
-  // Print bandwidth
-  fprintf(stderr, "add_float4; %f\n", gibs);
-
-  return gibs;
-}
-
-double run_add_float8(double x, double y)
-{
-  //
-  float8 a = (float)x;
-  float8 b = (float)y;
-  float8 c = 0.0;
-
-  //
-  double total_time = 0.0;
-  double elapsed = 0.0;
-  struct timespec before, after;
-
-  //
-  double number_of_ite = N_MAX / 8;
-
-  //
-  do
-    {
-      //
-      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
-      {
-        for (int i = 0; i < number_of_ite; i++)
-          {
-            c = a + b;
-          }
-      }
-      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
-
-      //
-      elapsed = after.tv_nsec - before.tv_nsec;
-
-    }
-  while (elapsed < 0.0);
-
-  //
-  total_time = elapsed;
-
-  // Mean
-  double mean_time = total_time / N_MAX;
-
-  // Nanosecond to second
-  double mean_time_sec = mean_time / 1.0e9;
-
-  // Compute size
-  double total_size = 3 * sizeof(float8) * number_of_ite;
-  double total_size_gib = total_size / (1024 * 1024 * 1024);
-
-  // Compute gibs
-  double gibs = total_size_gib / mean_time_sec;
-
-  // Print bandwidth
-  fprintf(stderr, "add_float8; %f\n", gibs);
-
-  return gibs;
-}
+define_speedup(add);
+define_speedup(sub);
+define_speedup(mul);
+define_speedup(div);
 
 int main(int argc, char **argv)
 {
@@ -242,14 +171,10 @@ int main(int argc, char **argv)
   double x = strtod(argv[1], NULL);
   double y = strtod(argv[2], NULL);
 
-  double baseline = run_add_float(x, y);
-  double gibs_2x = run_add_float2(x, y);
-  double gibs_4x = run_add_float4(x, y);
-  double gibs_8x = run_add_float8(x, y);
-
-  fprintf(stderr, "add_float2; %f\n", gibs_2x / baseline);
-  fprintf(stderr, "add_float4; %f\n", gibs_4x / baseline);
-  fprintf(stderr, "add_float8; %f\n", gibs_8x / baseline);
+  speedup_add(x, y);
+  speedup_sub(x, y);
+  speedup_mul(x, y);
+  speedup_div(x, y);
 
   return 0;
 }
