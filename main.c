@@ -4,7 +4,7 @@
 
 #include "rdtsc.h"
 
-#define N_MAX 10000
+#define N_MAX 1000000
 
 typedef float float2 __attribute__((ext_vector_type(2)));
 typedef float float4 __attribute__((ext_vector_type(4)));
@@ -45,26 +45,16 @@ typedef float float8 __attribute__((ext_vector_type(8)));
       }                                                                        \
     while (elapsed < 0.0);                                                     \
                                                                                \
-    /* */                                                                      \
-    total_time = elapsed;                                                      \
+    /* elapsed time in seconds */                                              \
+    double elapsed_sec = elapsed / 1.0e9;                                      \
                                                                                \
-    /* Mean */                                                                 \
-    double mean_time = total_time / N_MAX;                                     \
-                                                                               \
-    /* Nanosecond to second */                                                 \
-    double mean_time_sec = mean_time / 1.0e9;                                  \
-                                                                               \
-    /* Compute size */                                                         \
-    double total_size = 3 * sizeof(float) * number_of_ite;                     \
-    double total_size_gib = total_size / (1024 * 1024 * 1024);                 \
-                                                                               \
-    /* Compute gibs */                                                         \
-    double gibs = total_size_gib / mean_time_sec;                              \
+    /* Compute gflops */                                                       \
+    double gflops = (N_MAX / 1000) / elapsed_sec;                              \
                                                                                \
     /* Print bandwidth */                                                      \
-    fprintf(stderr, "%s_float; %f\n", #name, gibs);                            \
+    fprintf(stderr, "%s_float; %f\n", #name, gflops);                          \
                                                                                \
-    return gibs;                                                               \
+    return gflops;                                                             \
   }
 
 define_run_op_float(+, add);
@@ -107,26 +97,16 @@ define_run_op_float(/, div);
       }                                                                        \
     while (elapsed < 0.0);                                                     \
                                                                                \
-    /* */                                                                      \
-    total_time = elapsed;                                                      \
+    /* elapsed time in seconds */                                              \
+    double elapsed_sec = elapsed / 1.0e9;                                      \
                                                                                \
-    /* Mean */                                                                 \
-    double mean_time = total_time / N_MAX;                                     \
-                                                                               \
-    /* Nanosecond to second */                                                 \
-    double mean_time_sec = mean_time / 1.0e9;                                  \
-                                                                               \
-    /* Compute size */                                                         \
-    double total_size = 3 * sizeof(float##size) * number_of_ite;               \
-    double total_size_gib = total_size / (1024 * 1024 * 1024);                 \
-                                                                               \
-    /* Compute gibs */                                                         \
-    double gibs = total_size_gib / mean_time_sec;                              \
+    /* Compute gflops */                                                       \
+    double gflops = (N_MAX / 1000) / elapsed_sec;                              \
                                                                                \
     /* Print bandwidth */                                                      \
-    fprintf(stderr, "%s_float%d; %f\n", #name, size, gibs);                    \
+    fprintf(stderr, "%s_float%d; %f\n", #name, size, gflops);                  \
                                                                                \
-    return gibs;                                                               \
+    return gflops;                                                             \
   }
 
 define_run_op_floatX(2, +, add);
@@ -145,6 +125,7 @@ define_run_op_floatX(2, /, div);
 define_run_op_floatX(4, /, div);
 define_run_op_floatX(8, /, div);
 
+#if __AVX__
 #define define_speedup(name)                                            \
   void speedup_##name(x, y)                                             \
   {                                                                     \
@@ -162,6 +143,25 @@ define_speedup(add);
 define_speedup(sub);
 define_speedup(mul);
 define_speedup(div);
+#else
+#define define_speedup(name)                                            \
+  void speedup_##name(x, y)                                             \
+  {                                                                     \
+    double baseline = run_##name##_float(x, y);                         \
+    double gibs_2x = run_##name##_float2(x, y);                         \
+    double gibs_4x = run_##name##_float4(x, y);                         \
+    fprintf(stderr, "%s_float8; %f\n", #name, 0.0);                     \
+                                                                        \
+    fprintf(stderr, "%s_float2; %f\n", #name, gibs_2x / baseline);      \
+    fprintf(stderr, "%s_float4; %f\n", #name, gibs_4x / baseline);      \
+    fprintf(stderr, "%s_float8; %f\n", #name, 0.0);                     \
+  }
+
+define_speedup(add);
+define_speedup(sub);
+define_speedup(mul);
+define_speedup(div);
+#endif
 
 int main(int argc, char **argv)
 {
