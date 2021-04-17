@@ -32,9 +32,9 @@ plot "serial_ieee_perf.txt" u 2:xtic(1) t "Serial implementation",             \
 set yrange[0:5]
 
 set ylabel "Speedup in Pourcentage (higher is better)"
-plot "serial_ieee_speedup.txt" u 2:xtic(1) t "Serial implementation",          \
-     "vector_ieee_speedup.txt" u 2:xtic(1) t "Vector implementation",          \
-     "ieee_speedup.txt" u 2:xtic(1) t "Vector / Serial"
+plot "serial_ieee_speedup.txt" u 2:xtic(1) t "Serial floatX / Serial float",   \
+     "vector_ieee_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial float",   \
+     "ieee_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial floatX"
 
 unset multiplot
 
@@ -54,9 +54,9 @@ plot "serial_vprec_normal_perf.txt" u 2:xtic(1) t "Serial implementation",     \
 set yrange[0:5]
 
 set ylabel "Speedup in Pourcentage (higher is better)"
-plot "serial_vprec_normal_speedup.txt" u 2:xtic(1) t "Serial implementation",  \
-     "vector_vprec_normal_speedup.txt" u 2:xtic(1) t "Vector implementation",  \
-     "vprec_normal_speedup.txt" u 2:xtic(1) t "Vector / Serial"
+plot "serial_vprec_normal_speedup.txt" u 2:xtic(1) t "Serial floatX / Serial float", \
+     "vector_vprec_normal_speedup.txt" u 2:xtic(1) t "Vector floatX / Vector float", \
+     "vprec_normal_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial floatX"
 
 set title "VPREC Backend with denormal number and default setting"
 
@@ -69,9 +69,9 @@ plot "serial_vprec_denormal_perf.txt" u 2:xtic(1) t "Serial implementation",   \
 set yrange[0:5]
 
 set ylabel "Speedup in Pourcentage (higher is better)"
-plot "serial_vprec_denormal_speedup.txt" u 2:xtic(1) t "Serial implementation",\
-     "vector_vprec_denormal_speedup.txt" u 2:xtic(1) t "Vector implementation",\
-     "vprec_denormal_speedup.txt" u 2:xtic(1) t "Vector / Serial"
+plot "serial_vprec_denormal_speedup.txt" u 2:xtic(1) t "Serial floatX / Serial float", \
+     "vector_vprec_denormal_speedup.txt" u 2:xtic(1) t "Vector floatX / Vector float", \
+     "vprec_denormal_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial floatX"
 
 unset multiplot
 
@@ -91,9 +91,9 @@ plot "serial_vprec_full_normal_perf.txt" u 2:xtic(1) t "Serial implementation", 
 set yrange[0:5]
 
 set ylabel "Speedup in Pourcentage (higher is better)"
-plot "serial_vprec_full_normal_speedup.txt" u 2:xtic(1) t "Serial implementation",  \
-     "vector_vprec_full_normal_speedup.txt" u 2:xtic(1) t "Vector implementation",  \
-     "vprec_full_normal_speedup.txt" u 2:xtic(1) t "Vector / Serial"
+plot "serial_vprec_full_normal_speedup.txt" u 2:xtic(1) t "Serial floatX / Serial float", \
+     "vector_vprec_full_normal_speedup.txt" u 2:xtic(1) t "Vector floatX / Vector float", \
+     "vprec_full_normal_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial floatX"
 
 set title "VPREC Backend with denormal number and full mode"
 
@@ -106,8 +106,8 @@ plot "serial_vprec_full_denormal_perf.txt" u 2:xtic(1) t "Serial implementation"
 set yrange[0:5]
 
 set ylabel "Speedup in Pourcentage (higher is better)"
-plot "serial_vprec_full_denormal_speedup.txt" u 2:xtic(1) t "Serial implementation",\
-     "vector_vprec_full_denormal_speedup.txt" u 2:xtic(1) t "Vector implementation",\
-     "vprec_full_denormal_speedup.txt" u 2:xtic(1) t "Vector / Serial"
+plot "serial_vprec_full_denormal_speedup.txt" u 2:xtic(1) t "Serial floatX / Serial float", \
+     "vector_vprec_full_denormal_speedup.txt" u 2:xtic(1) t "Vector floatX / Vector float", \
+     "vprec_full_denormal_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial floatX"
 
 unset multiplot
