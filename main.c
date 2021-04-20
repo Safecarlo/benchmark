@@ -174,7 +174,7 @@ int main(int argc, char **argv)
   speedup_add(x, y);
   speedup_sub(x, y);
   speedup_mul(x, y);
-  speedup_div(x, y);
+  speedup_div(x, 1.0);
 
   return 0;
 }
