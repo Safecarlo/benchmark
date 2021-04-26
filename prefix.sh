@@ -2,7 +2,7 @@
 
 prefix=$1
 
-files=$(ls ieee*perf.txt vprec*perf.txt ieee*speedup.txt vprec*speedup.txt)
+files="ieee.txt vprec_normal.txt vprec_denormal.txt"
 
 for file in $files ; do
     mv $file $prefix"_"$file

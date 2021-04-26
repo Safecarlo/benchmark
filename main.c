@@ -4,7 +4,7 @@
 #include <math.h>
 
 #define N_MAX 1000000
-#define SAMPLE 200
+#define SAMPLE 10
 
 typedef float float2 __attribute__((ext_vector_type(2)));
 typedef float float4 __attribute__((ext_vector_type(4)));
@@ -179,13 +179,13 @@ double stddev(double *a, unsigned n)
     double stddev_gflops_4x = stddev(gflops_4x, SAMPLE);                       \
     double stddev_gflops_8x = stddev(gflops_8x, SAMPLE);                       \
                                                                                \
-    fprintf(stderr, "%9s%s; %f; %f; %f%%\n", #name, "_float", mean_baseline,   \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float", mean_baseline,    \
             1.0, stddev_baseline);                                             \
-    fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float2", mean_gflops_2x, \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float2", mean_gflops_2x,  \
             mean_gflops_2x / mean_baseline, stddev_gflops_2x);                 \
-    fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float4", mean_gflops_4x, \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float4", mean_gflops_4x,  \
             mean_gflops_4x / mean_baseline, stddev_gflops_4x);                 \
-    fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float8", mean_gflops_8x, \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float8", mean_gflops_8x,  \
             mean_gflops_8x / mean_baseline, stddev_gflops_8x);                 \
   }
 #else
@@ -211,13 +211,13 @@ double stddev(double *a, unsigned n)
     double stddev_gflops_2x = stddev(gflops_2x, SAMPLE);                       \
     double stddev_gflops_4x = stddev(gflops_4x, SAMPLE);                       \
                                                                                \
-    fprintf(stderr, "%9s%s; %f; %f; %f%%\n", #name, "_float", mean_baseline,   \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float", mean_baseline,    \
             1.0, stddev_baseline);                                             \
-    fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float2", mean_gflops_2x, \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float2", mean_gflops_2x,  \
             mean_gflops_2x / mean_baseline, stddev_gflops_2x);                 \
-    fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float4", mean_gflops_4x, \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float4", mean_gflops_4x,  \
             mean_gflops_4x / mean_baseline, stddev_gflops_4x);                 \
-    fprintf(stderr, "%8s%s; %f; %f %f%%\n", #name, "_float8", 0.0, 0.0, 0.0);  \
+    fprintf(stderr, "%s%s; %f; %f %f%%\n", #name, "_float8", 0.0, 0.0, 0.0);   \
   }
 #endif
 
