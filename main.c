@@ -47,7 +47,7 @@ typedef float float8 __attribute__((ext_vector_type(8)));
     while (elapsed < 0.0);                                                     \
                                                                                \
     /* elapsed time in seconds */                                              \
-    double elapsed_sec = elapsed / 1.0e9;                                      \
+    double elapsed_sec = elapsed / 10.0e9;                                     \
                                                                                \
     /* Compute gflops */                                                       \
     double gflops = (N_MAX / 1000) / elapsed_sec;                              \
@@ -95,7 +95,7 @@ define_run_op_float(/, div);
     while (elapsed < 0.0);                                                     \
                                                                                \
     /* elapsed time in seconds */                                              \
-    double elapsed_sec = elapsed / 1.0e9;                                      \
+    double elapsed_sec = elapsed / 10.0e9;                                     \
                                                                                \
     /* Compute gflops */                                                       \
     double gflops = (N_MAX / 1000) / elapsed_sec;                              \
