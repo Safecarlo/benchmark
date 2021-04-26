@@ -10,7 +10,7 @@ speedup_backend()
     rm -Rf $output_file
 
     for op in add sub mul div ; do
-        echo $op"; 1.0" >> $output_file
+        echo $op"_float; 1.0" >> $output_file
         for i in 2 4 8 ; do
             index=$(($index + 1))
             serial=$(cat $serial_file | sed -n $index"p" | cut -d";" -f2)
