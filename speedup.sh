@@ -17,6 +17,7 @@ speedup_backend()
             vector=$(cat $vector_file | sed -n $index"p" | cut -d";" -f2)
             ./compute $op $i $vector $serial 2>> $output_file
         done
+        index=$(($index + 1))
     done
 }
 
