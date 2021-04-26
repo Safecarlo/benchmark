@@ -121,6 +121,21 @@ define_run_op_floatX(8, /, div);
 #endif
 
 //
+void sort(double *a, unsigned n)
+{
+  //
+  for (unsigned i = 0; i < n; i++)
+    for (unsigned j = i + 1; j < n; j++)
+      if (a[i] > a[j])
+        {
+          double tmp = a[i];
+
+          a[i] = a[j];
+          a[j] = tmp;
+        }
+}
+
+//
 double mean(double *a, unsigned n)
 {
   //
@@ -168,6 +183,11 @@ double stddev(double *a, unsigned n)
         gflops_4x[i] = run_##name##_float4(x, y);                              \
         gflops_8x[i] = run_##name##_float8(x, y);                              \
       }                                                                        \
+                                                                               \
+    sort(baseline, SAMPLE);                                                    \
+    sort(gflops_2x, SAMPLE);                                                   \
+    sort(gflops_4x, SAMPLE);                                                   \
+    sort(gflops_8x, SAMPLE);                                                   \
                                                                                \
     double mean_baseline = mean(baseline, SAMPLE);                             \
     double mean_gflops_2x = mean(gflops_2x, SAMPLE);                           \
