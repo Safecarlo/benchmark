@@ -4,11 +4,13 @@
 #include <math.h>
 
 #define N_MAX 1000000
-#define SAMPLE 100
+#define SAMPLE 200
 
 typedef float float2 __attribute__((ext_vector_type(2)));
 typedef float float4 __attribute__((ext_vector_type(4)));
+#if __AVX__
 typedef float float8 __attribute__((ext_vector_type(8)));
+#endif
 
 #define define_run_op_float(op, name)                                          \
   double run_##name##_float(double x, double y)                                \
@@ -39,7 +41,7 @@ typedef float float8 __attribute__((ext_vector_type(8)));
         clock_gettime(CLOCK_MONOTONIC_RAW, &after);                            \
                                                                                \
         /* */                                                                  \
-        elapsed = after.tv_nsec - before.tv_nsec;                              \
+        elapsed = (double)(after.tv_nsec - before.tv_nsec);                    \
                                                                                \
       }                                                                        \
     while (elapsed < 0.0);                                                     \
@@ -87,7 +89,7 @@ define_run_op_float(/, div);
         clock_gettime(CLOCK_MONOTONIC_RAW, &after);                            \
                                                                                \
         /* */                                                                  \
-        elapsed = after.tv_nsec - before.tv_nsec;                              \
+        elapsed = (double)(after.tv_nsec - before.tv_nsec);                    \
                                                                                \
       }                                                                        \
     while (elapsed < 0.0);                                                     \
@@ -102,20 +104,21 @@ define_run_op_float(/, div);
   }
 
 define_run_op_floatX(2, +, add);
-define_run_op_floatX(4, +, add);
-define_run_op_floatX(8, +, add);
-
 define_run_op_floatX(2, -, sub);
-define_run_op_floatX(4, -, sub);
-define_run_op_floatX(8, -, sub);
-
 define_run_op_floatX(2, *, mul);
-define_run_op_floatX(4, *, mul);
-define_run_op_floatX(8, *, mul);
-
 define_run_op_floatX(2, /, div);
+
+define_run_op_floatX(4, +, add);
+define_run_op_floatX(4, -, sub);
+define_run_op_floatX(4, *, mul);
 define_run_op_floatX(4, /, div);
+
+#if __AVX__
+define_run_op_floatX(8, +, add);
+define_run_op_floatX(8, -, sub);
+define_run_op_floatX(8, *, mul);
 define_run_op_floatX(8, /, div);
+#endif
 
 //
 double mean(double *a, unsigned n)
@@ -185,11 +188,6 @@ double stddev(double *a, unsigned n)
     fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float8", mean_gflops_8x, \
             mean_gflops_8x / mean_baseline, stddev_gflops_8x);                 \
   }
-
-define_speedup(add);
-define_speedup(sub);
-define_speedup(mul);
-define_speedup(div);
 #else
 #define define_speedup(name)                                                   \
   void speedup_##name(x, y)                                                    \
@@ -197,25 +195,21 @@ define_speedup(div);
     double baseline[SAMPLE];                                                   \
     double gflops_2x[SAMPLE];                                                  \
     double gflops_4x[SAMPLE];                                                  \
-    double gflops_8x[SAMPLE];                                                  \
                                                                                \
     for (int i = 0; i < SAMPLE; i++)                                           \
       {                                                                        \
         baseline[i] = run_##name##_float(x, y);                                \
         gflops_2x[i] = run_##name##_float2(x, y);                              \
         gflops_4x[i] = run_##name##_float4(x, y);                              \
-        gflops_8x[i] = run_##name##_float8(x, y);                              \
       }                                                                        \
                                                                                \
     double mean_baseline = mean(baseline, SAMPLE);                             \
     double mean_gflops_2x = mean(gflops_2x, SAMPLE);                           \
     double mean_gflops_4x = mean(gflops_4x, SAMPLE);                           \
-    double mean_gflops_8x = mean(gflops_8x, SAMPLE);                           \
                                                                                \
     double stddev_baseline = stddev(baseline, SAMPLE);                         \
     double stddev_gflops_2x = stddev(gflops_2x, SAMPLE);                       \
     double stddev_gflops_4x = stddev(gflops_4x, SAMPLE);                       \
-    double stddev_gflops_8x = stddev(gflops_8x, SAMPLE);                       \
                                                                                \
     fprintf(stderr, "%9s%s; %f; %f; %f%%\n", #name, "_float", mean_baseline,   \
             1.0, stddev_baseline);                                             \
@@ -225,12 +219,12 @@ define_speedup(div);
             mean_gflops_4x / mean_baseline, stddev_gflops_4x);                 \
     fprintf(stderr, "%8s%s; %f; %f %f%%\n", #name, "_float8", 0.0, 0.0, 0.0);  \
   }
+#endif
 
 define_speedup(add);
 define_speedup(sub);
 define_speedup(mul);
 define_speedup(div);
-#endif
 
 int main(int argc, char **argv)
 {
