@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-#include "rdtsc.h"
+#include <math.h>
 
 #define N_MAX 1000000
+#define SAMPLE 100
 
 typedef float float2 __attribute__((ext_vector_type(2)));
 typedef float float4 __attribute__((ext_vector_type(4)));
@@ -19,7 +19,6 @@ typedef float float8 __attribute__((ext_vector_type(8)));
     float c = 0.0;                                                             \
                                                                                \
     /* */                                                                      \
-    double total_time = 0.0;                                                   \
     double elapsed = 0.0;                                                      \
     struct timespec before, after;                                             \
                                                                                \
@@ -51,9 +50,6 @@ typedef float float8 __attribute__((ext_vector_type(8)));
     /* Compute gflops */                                                       \
     double gflops = (N_MAX / 1000) / elapsed_sec;                              \
                                                                                \
-    /* Print bandwidth */                                                      \
-    fprintf(stderr, "%s_float; %f\n", #name, gflops);                          \
-                                                                               \
     return gflops;                                                             \
   }
 
@@ -71,7 +67,6 @@ define_run_op_float(/, div);
     float##size c = 0.0;                                                       \
                                                                                \
     /* */                                                                      \
-    double total_time = 0.0;                                                   \
     double elapsed = 0.0;                                                      \
     struct timespec before, after;                                             \
                                                                                \
@@ -103,9 +98,6 @@ define_run_op_float(/, div);
     /* Compute gflops */                                                       \
     double gflops = (N_MAX / 1000) / elapsed_sec;                              \
                                                                                \
-    /* Print bandwidth */                                                      \
-    fprintf(stderr, "%s_float%d; %f\n", #name, size, gflops);                  \
-                                                                               \
     return gflops;                                                             \
   }
 
@@ -125,18 +117,73 @@ define_run_op_floatX(2, /, div);
 define_run_op_floatX(4, /, div);
 define_run_op_floatX(8, /, div);
 
+//
+double mean(double *a, unsigned n)
+{
+  //
+  double m = 0.0;
+
+  //
+  for (unsigned i = 0; i < n; i++)
+    m += a[i];
+
+  //
+  return m / (double)n;
+}
+
+//
+double stddev(double *a, unsigned n)
+{
+  //
+  double d = 0.0;
+  double m = mean(a, n);
+  
+  //
+  for (unsigned i = 0; i < n; i++)
+    d += (a[i] - m) * (a[i] - m);
+
+  //
+  d /= (double)(n - 1);
+  
+  //
+  return sqrt(d);
+}
+
 #if __AVX__
-#define define_speedup(name)                                            \
-  void speedup_##name(x, y)                                             \
-  {                                                                     \
-    double baseline = run_##name##_float(x, y);                         \
-    double gibs_2x = run_##name##_float2(x, y);                         \
-    double gibs_4x = run_##name##_float4(x, y);                         \
-    double gibs_8x = run_##name##_float8(x, y);                         \
-                                                                        \
-    fprintf(stderr, "%s_float2; %f\n", #name, gibs_2x / baseline);      \
-    fprintf(stderr, "%s_float4; %f\n", #name, gibs_4x / baseline);      \
-    fprintf(stderr, "%s_float8; %f\n", #name, gibs_8x / baseline);      \
+#define define_speedup(name)                                                   \
+  void speedup_##name(x, y)                                                    \
+  {                                                                            \
+    double baseline[SAMPLE];                                                   \
+    double gflops_2x[SAMPLE];                                                  \
+    double gflops_4x[SAMPLE];                                                  \
+    double gflops_8x[SAMPLE];                                                  \
+                                                                               \
+    for (int i = 0; i < SAMPLE; i++)                                           \
+      {                                                                        \
+        baseline[i] = run_##name##_float(x, y);                                \
+        gflops_2x[i] = run_##name##_float2(x, y);                              \
+        gflops_4x[i] = run_##name##_float4(x, y);                              \
+        gflops_8x[i] = run_##name##_float8(x, y);                              \
+      }                                                                        \
+                                                                               \
+    double mean_baseline = mean(baseline, SAMPLE);                             \
+    double mean_gflops_2x = mean(gflops_2x, SAMPLE);                           \
+    double mean_gflops_4x = mean(gflops_4x, SAMPLE);                           \
+    double mean_gflops_8x = mean(gflops_8x, SAMPLE);                           \
+                                                                               \
+    double stddev_baseline = stddev(baseline, SAMPLE);                         \
+    double stddev_gflops_2x = stddev(gflops_2x, SAMPLE);                       \
+    double stddev_gflops_4x = stddev(gflops_4x, SAMPLE);                       \
+    double stddev_gflops_8x = stddev(gflops_8x, SAMPLE);                       \
+                                                                               \
+    fprintf(stderr, "%9s%s; %f; %f; %f%%\n", #name, "_float", mean_baseline,   \
+            1.0, stddev_baseline);                                             \
+    fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float2", mean_gflops_2x, \
+            mean_gflops_2x / mean_baseline, stddev_gflops_2x);                 \
+    fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float4", mean_gflops_4x, \
+            mean_gflops_4x / mean_baseline, stddev_gflops_4x);                 \
+    fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float8", mean_gflops_8x, \
+            mean_gflops_8x / mean_baseline, stddev_gflops_8x);                 \
   }
 
 define_speedup(add);
@@ -144,17 +191,39 @@ define_speedup(sub);
 define_speedup(mul);
 define_speedup(div);
 #else
-#define define_speedup(name)                                            \
-  void speedup_##name(x, y)                                             \
-  {                                                                     \
-    double baseline = run_##name##_float(x, y);                         \
-    double gibs_2x = run_##name##_float2(x, y);                         \
-    double gibs_4x = run_##name##_float4(x, y);                         \
-    fprintf(stderr, "%s_float8; %f\n", #name, 0.0);                     \
-                                                                        \
-    fprintf(stderr, "%s_float2; %f\n", #name, gibs_2x / baseline);      \
-    fprintf(stderr, "%s_float4; %f\n", #name, gibs_4x / baseline);      \
-    fprintf(stderr, "%s_float8; %f\n", #name, 0.0);                     \
+#define define_speedup(name)                                                   \
+  void speedup_##name(x, y)                                                    \
+  {                                                                            \
+    double baseline[SAMPLE];                                                   \
+    double gflops_2x[SAMPLE];                                                  \
+    double gflops_4x[SAMPLE];                                                  \
+    double gflops_8x[SAMPLE];                                                  \
+                                                                               \
+    for (int i = 0; i < SAMPLE; i++)                                           \
+      {                                                                        \
+        baseline[i] = run_##name##_float(x, y);                                \
+        gflops_2x[i] = run_##name##_float2(x, y);                              \
+        gflops_4x[i] = run_##name##_float4(x, y);                              \
+        gflops_8x[i] = run_##name##_float8(x, y);                              \
+      }                                                                        \
+                                                                               \
+    double mean_baseline = mean(baseline, SAMPLE);                             \
+    double mean_gflops_2x = mean(gflops_2x, SAMPLE);                           \
+    double mean_gflops_4x = mean(gflops_4x, SAMPLE);                           \
+    double mean_gflops_8x = mean(gflops_8x, SAMPLE);                           \
+                                                                               \
+    double stddev_baseline = stddev(baseline, SAMPLE);                         \
+    double stddev_gflops_2x = stddev(gflops_2x, SAMPLE);                       \
+    double stddev_gflops_4x = stddev(gflops_4x, SAMPLE);                       \
+    double stddev_gflops_8x = stddev(gflops_8x, SAMPLE);                       \
+                                                                               \
+    fprintf(stderr, "%9s%s; %f; %f; %f%%\n", #name, "_float", mean_baseline,   \
+            1.0, stddev_baseline);                                             \
+    fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float2", mean_gflops_2x, \
+            mean_gflops_2x / mean_baseline, stddev_gflops_2x);                 \
+    fprintf(stderr, "%8s%s; %f; %f; %f%%\n", #name, "_float4", mean_gflops_4x, \
+            mean_gflops_4x / mean_baseline, stddev_gflops_4x);                 \
+    fprintf(stderr, "%8s%s; %f; %f %f%%\n", #name, "_float8", 0.0, 0.0, 0.0);  \
   }
 
 define_speedup(add);
