@@ -20,21 +20,12 @@ speedup_backend()
     done
 }
 
-serial=$(ls serial*.txt)
-vector=$(ls vector*.txt)
+files=$(ls serial*)
 
-for s in $serial ; do
-    for v in $vector ; do
+for f in $files ; do
+    f_without_prefix=${f#serial_}
+    f_without_prefix_and_suffix=${f_without_prefix%.txt}
 
-        s_without_prefix=${s#serial_}
-        s_without_prefix_and_suffix=${s_without_prefix%.txt}
-
-        v_without_prefix=${v#vector_}
-        v_without_prefix_and_suffix=${v_without_prefix%.txt}
-
-        if [ $s_without_prefix_and_suffix == $v_without_prefix_and_suffix ] ; then
-            speedup_backend $s $v $s_without_prefix_and_suffix"_speedup.txt"
-        fi
-    done
+    speedup_backend "serial_"$f_without_prefix_and_suffix".txt" "vector_"$f_without_prefix_and_suffix".txt" $f_without_prefix_and_suffix"_speedup.txt"
 done
 
