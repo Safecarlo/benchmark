@@ -14,7 +14,13 @@ set style data histogram
 set style fill solid border -1
 set boxwidth 0.9
 
+set key spacing 2
+set key box lt -1 lw 2
+
 set xtic rotate by -45 scale 0
+
+set border linewidth 2
+#set terminal png background "#1b1c1d"
 
 # IEEE BACKEND
 
@@ -38,15 +44,6 @@ plot "serial_ieee.txt" u 3:xtic(1) t "Serial floatX / Serial float",           \
 
 unset multiplot
 
-set output "ieee_stddev.png"
-
-set title "IEEE Backend standart derivation"
-
-set yrange[0:]
-
-set ylabel "Standart derivation in %"
-plot "serial_ieee.txt" u 4:xtic(1) t "Serial implementation",                  \
-     "vector_ieee.txt" u 4:xtic(1) t "Vector implementation"
 
 # VPREC BACKEND
 
@@ -83,11 +80,29 @@ plot "serial_vprec_denormal.txt" u 3:xtic(1) t "Serial floatX / Serial float", \
 
 unset multiplot
 
+
+# Standart derivation
+
+set arrow from -1,6 to 16,6 nohead linecolor "red" linewidth 5
+
+# IEEE BACKEND
+set output "ieee_stddev.png"
+
+set title "IEEE Backend standart derivation"
+
+set yrange[0:100]
+
+set ylabel "Standart derivation in %"
+plot "serial_ieee.txt" u 4:xtic(1) t "Serial implementation",                  \
+     "vector_ieee.txt" u 4:xtic(1) t "Vector implementation"
+
+# VPREC BACKEND
+
 set output "vprec_normal_stddev.png"
 
 set title "VPREC Backend standart derivation with normal number"
 
-set yrange[0:]
+set yrange[0:100]
 
 set ylabel "Standart derivation in %"
 plot "serial_vprec_normal.txt" u 4:xtic(1) t "Serial implementation",          \
@@ -97,7 +112,7 @@ set output "vprec_denormal_stddev.png"
 
 set title "VPREC Backend standart derivation with denormal number"
 
-set yrange[0:]
+set yrange[0:100]
 
 set ylabel "Standart derivation in %"
 plot "serial_vprec_denormal.txt" u 4:xtic(1) t "Serial implementation",        \
