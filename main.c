@@ -5,6 +5,9 @@
 
 #define N_MAX 1000000
 #define SAMPLE 30
+#define KILO 1000
+#define MEGA 1000000
+#define GIGA 1000000000
 
 typedef float float2 __attribute__((ext_vector_type(2)));
 typedef float float4 __attribute__((ext_vector_type(4)));
@@ -47,10 +50,10 @@ typedef float float8 __attribute__((ext_vector_type(8)));
     while (elapsed < 0.0);                                                     \
                                                                                \
     /* elapsed time in seconds */                                              \
-    double elapsed_sec = elapsed / 1000000000;                                 \
+    double elapsed_sec = elapsed / GIGA;                                       \
                                                                                \
     /* Compute gflops */                                                       \
-    double gflops = (N_MAX / 1000) / elapsed_sec;                              \
+    double gflops = (N_MAX / MEGA) / elapsed_sec;                              \
                                                                                \
     return gflops;                                                             \
   }
@@ -95,10 +98,10 @@ define_run_op_float(/, div);
     while (elapsed < 0.0);                                                     \
                                                                                \
     /* elapsed time in seconds */                                              \
-    double elapsed_sec = elapsed / 1000000000;                                 \
+    double elapsed_sec = elapsed / GIGA;                                       \
                                                                                \
     /* Compute gflops */                                                       \
-    double gflops = (N_MAX / 1000) / elapsed_sec;                              \
+    double gflops = (N_MAX / MEGA) / elapsed_sec;                              \
                                                                                \
     return gflops;                                                             \
   }

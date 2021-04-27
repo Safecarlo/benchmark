@@ -29,13 +29,13 @@ set multiplot layout 2, 2 rowsfirst
 
 set title "IEEE Backend"
 
-set yrange[0:]
+set yrange[0:300]
 
-set ylabel "Bandwidth in GFLOP Per Second (higher is better)"
+set ylabel "Bandwidth in MFLOP Per Second (higher is better)"
 plot "serial_ieee.txt" u 2:xtic(1) t "Serial implementation",                  \
      "vector_ieee.txt" u 2:xtic(1) t "Vector implementation"
 
-set yrange[0:]
+set yrange[0:8]
 
 set ylabel "Speedup in % (higher is better)"
 plot "serial_ieee.txt" u 3:xtic(1) t "Serial floatX / Serial float",           \
@@ -52,26 +52,26 @@ set multiplot layout 2, 2 rowsfirst
 
 set title "VPREC Backend with normal number"
 
-set yrange[0:]
+set yrange[0:150]
 
-set ylabel "Bandwidth in GFLOP Per Second (higher is better)"
+set ylabel "Bandwidth in MFLOP Per Second (higher is better)"
 plot "serial_vprec_normal.txt" u 2:xtic(1) t "Serial implementation",          \
      "vector_vprec_normal.txt" u 2:xtic(1) t "Vector implementation"
 
-set yrange[0:]
+set yrange[0:8]
 
 set ylabel "Speedup in % (higher is better)"
 plot "serial_vprec_normal.txt" u 3:xtic(1) t "Serial floatX / Serial float",   \
      "vector_vprec_normal.txt" u 3:xtic(1) t "Vector floatX / Vector float",   \
      "vprec_normal_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial floatX"
 
-set yrange[0:]
+set yrange[0:150]
 
-set ylabel "Bandwidth in GFLOP Per Second (higher is better)"
+set ylabel "Bandwidth in MFLOP Per Second (higher is better)"
 plot "serial_vprec_denormal.txt" u 2:xtic(1) t "Serial implementation",        \
      "vector_vprec_denormal.txt" u 2:xtic(1) t "Vector implementation"
 
-set yrange[0:]
+set yrange[0:8]
 
 set ylabel "Speedup in % (higher is better)"
 plot "serial_vprec_denormal.txt" u 3:xtic(1) t "Serial floatX / Serial float", \
