@@ -92,7 +92,7 @@ set title "IEEE Backend standart derivation"
 
 set yrange[0:100]
 
-set ylabel "Standart derivation in %"
+set ylabel "Standart derivation in % (lower is better)"
 plot "serial_ieee.txt" u 4:xtic(1) t "Serial implementation",                  \
      "vector_ieee.txt" u 4:xtic(1) t "Vector implementation"
 
@@ -104,7 +104,7 @@ set title "VPREC Backend standart derivation with normal number"
 
 set yrange[0:100]
 
-set ylabel "Standart derivation in %"
+set ylabel "Standart derivation in % (lower is better)"
 plot "serial_vprec_normal.txt" u 4:xtic(1) t "Serial implementation",          \
      "vector_vprec_normal.txt" u 4:xtic(1) t "Vector implementation"
 
@@ -114,6 +114,6 @@ set title "VPREC Backend standart derivation with denormal number"
 
 set yrange[0:100]
 
-set ylabel "Standart derivation in %"
+set ylabel "Standart derivation in % (lower is better)"
 plot "serial_vprec_denormal.txt" u 4:xtic(1) t "Serial implementation",        \
      "vector_vprec_denormal.txt" u 4:xtic(1) t "Vector implementation"
