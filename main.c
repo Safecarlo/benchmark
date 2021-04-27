@@ -4,7 +4,7 @@
 #include <math.h>
 
 #define N_MAX 1000000
-#define SAMPLE 10
+#define SAMPLE 30
 
 typedef float float2 __attribute__((ext_vector_type(2)));
 typedef float float4 __attribute__((ext_vector_type(4)));
@@ -47,7 +47,7 @@ typedef float float8 __attribute__((ext_vector_type(8)));
     while (elapsed < 0.0);                                                     \
                                                                                \
     /* elapsed time in seconds */                                              \
-    double elapsed_sec = elapsed / 10.0e9;                                     \
+    double elapsed_sec = elapsed / 1000000000;                                 \
                                                                                \
     /* Compute gflops */                                                       \
     double gflops = (N_MAX / 1000) / elapsed_sec;                              \
@@ -95,7 +95,7 @@ define_run_op_float(/, div);
     while (elapsed < 0.0);                                                     \
                                                                                \
     /* elapsed time in seconds */                                              \
-    double elapsed_sec = elapsed / 10.0e9;                                     \
+    double elapsed_sec = elapsed / 1000000000;                                 \
                                                                                \
     /* Compute gflops */                                                       \
     double gflops = (N_MAX / 1000) / elapsed_sec;                              \
