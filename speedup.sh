@@ -30,3 +30,4 @@ for f in $files ; do
     speedup_backend "serial_"$f_without_prefix_and_suffix".txt" "vector_"$f_without_prefix_and_suffix".txt" $f_without_prefix_and_suffix"_speedup.txt"
 done
 
+speedup_backend "normal_serial_vprec_normal.txt" "vector_vprec_normal.txt" "serial_vprec_normal_speedup.txt"
