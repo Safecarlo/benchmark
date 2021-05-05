@@ -1,4 +1,4 @@
-set term png size 1900,1000 noenhanced font "Terminal,10"
+set term png size 1900,1000 noenhanced font "Terminal,11"
 
 set datafile separator ";"
 

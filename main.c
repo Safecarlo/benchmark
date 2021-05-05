@@ -67,9 +67,16 @@ define_run_op_float(/, div);
   double run_##name##_float##size(double x, double y)                          \
   {                                                                            \
     /* */                                                                      \
-    float##size a = (float)x;                                                  \
-    float##size b = (float)y;                                                  \
-    float##size c = 0.0;                                                       \
+    float##size a;                                                             \
+    float##size b;                                                             \
+    float##size c;                                                             \
+                                                                               \
+    for (int i = 0; i < size; i++)                                             \
+      {                                                                        \
+        a[i] = x;                                                              \
+        b[i] = y;                                                              \
+        c[i] = 0.0;                                                            \
+      }                                                                        \
                                                                                \
     /* */                                                                      \
     double elapsed = 0.0;                                                      \
@@ -172,7 +179,7 @@ double stddev(double *a, unsigned n)
 
 #if __AVX__
 #define define_speedup(name)                                                   \
-  void speedup_##name(x, y)                                                    \
+  void speedup_##name(double x, double y)                                      \
   {                                                                            \
     double baseline[SAMPLE];                                                   \
     double gflops_2x[SAMPLE];                                                  \
@@ -218,7 +225,7 @@ double stddev(double *a, unsigned n)
   }
 #else
 #define define_speedup(name)                                                   \
-  void speedup_##name(x, y)                                                    \
+  void speedup_##name(double x, double y)                                      \
   {                                                                            \
     double baseline[SAMPLE];                                                   \
     double gflops_2x[SAMPLE];                                                  \
@@ -268,7 +275,7 @@ int main(int argc, char **argv)
 
   speedup_add(x, y);
   speedup_sub(x, y);
-  speedup_mul(x, y);
+  speedup_mul(x, 1.0);
   speedup_div(x, 1.0);
 
   return 0;
