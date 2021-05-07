@@ -37,10 +37,24 @@ $ ./run.sh [CORE ID]
 $ ./prefix.sh vector
 #+END_SRC
 
+** Run on vector branch with serial implementaion of normal
+
+   It will run all test, that is for *ieee* and *vprec* with *normal* and
+   *denormal* numbers. But we just need the result of *vprec* with *normal*
+   numbers.
+   
+#+BEGIN_SRC shell
+  $ ./run.sh [CORE ID]
+  $ rm -Rf ieee.txt
+  $ rm -Rf vprec_denormal.txt
+  $ mv vprec_normal.txt nomral_serial_vprec_normal.txt
+#+END_SRC
+
 ** Speedup
 
-   Now you can compute speedup between *serial* version and *vector*
-   version. Note that *serial* vesion is taken as baseline.
+   Now you can compute speedup between *master branch* and *vector branch*. Note
+   that *master branch* is taken as baseline (except for the difference in
+   serial and vector normal difference in vprec).
 
 #+BEGIN_SRC shell
 $ ./speedup.sh
