@@ -3,14 +3,21 @@
 
 int main(int argc, char **argv)
 {
-  if (argc != 4)
+  if (argc != 5)
     return 1;
 
-  int n = atoi(argv[1]);
-  double a = strtod(argv[2], NULL);
-  double b = strtod(argv[3], NULL);
+  int n = atoi(argv[2]);
+  double a = strtod(argv[3], NULL);
+  double b = strtod(argv[4], NULL);
 
-  fprintf(stderr, "add_float%d; %f\n", n, a / b);
+  if (a == 0.0 || b == 0.0)
+    {
+      fprintf(stderr, "%s_float%d; 0.0\n", argv[1], n);
+    }
+  else
+    {
+      fprintf(stderr, "%s_float%d; %f\n", argv[1], n, a / b);
+    }
   
   return 0;
 }

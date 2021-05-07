@@ -1,238 +1,269 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
-#include "rdtsc.h"
-
-#define N_MAX 10000
+#define N_MAX 1000000
+#define SAMPLE 30
+#define KILO 1000
+#define MEGA 1000000
+#define GIGA 1000000000
 
 typedef float float2 __attribute__((ext_vector_type(2)));
 typedef float float4 __attribute__((ext_vector_type(4)));
+#if __AVX__
 typedef float float8 __attribute__((ext_vector_type(8)));
+#endif
 
-double run_add_float(double x, double y)
+#define define_run_op_float(op, name)                                          \
+  double run_##name##_float(double x, double y)                                \
+  {                                                                            \
+    /* */                                                                      \
+    float a = (float)x;                                                        \
+    float b = (float)y;                                                        \
+    float c = 0.0;                                                             \
+                                                                               \
+    /* */                                                                      \
+    double elapsed = 0.0;                                                      \
+    struct timespec before, after;                                             \
+                                                                               \
+    /* */                                                                      \
+    double number_of_ite = N_MAX;                                              \
+                                                                               \
+    /* */                                                                      \
+    do                                                                         \
+      {                                                                        \
+        /* */                                                                  \
+        clock_gettime(CLOCK_MONOTONIC_RAW, &before);                           \
+        {                                                                      \
+          for (int i = 0; i < number_of_ite; i++)                              \
+            {                                                                  \
+              c = a op b;                                                      \
+            }                                                                  \
+        }                                                                      \
+        clock_gettime(CLOCK_MONOTONIC_RAW, &after);                            \
+                                                                               \
+        /* */                                                                  \
+        elapsed = (double)(after.tv_nsec - before.tv_nsec);                    \
+                                                                               \
+      }                                                                        \
+    while (elapsed < 0.0);                                                     \
+                                                                               \
+    /* elapsed time in seconds */                                              \
+    double elapsed_sec = elapsed / GIGA;                                       \
+                                                                               \
+    /* Compute gflops */                                                       \
+    double gflops = (N_MAX / MEGA) / elapsed_sec;                              \
+                                                                               \
+    return gflops;                                                             \
+  }
+
+define_run_op_float(+, add);
+define_run_op_float(-, sub);
+define_run_op_float(*, mul);
+define_run_op_float(/, div);
+
+#define define_run_op_floatX(size, op, name)                                   \
+  double run_##name##_float##size(double x, double y)                          \
+  {                                                                            \
+    /* */                                                                      \
+    float##size a;                                                             \
+    float##size b;                                                             \
+    float##size c;                                                             \
+                                                                               \
+    for (int i = 0; i < size; i++)                                             \
+      {                                                                        \
+        a[i] = x;                                                              \
+        b[i] = y;                                                              \
+        c[i] = 0.0;                                                            \
+      }                                                                        \
+                                                                               \
+    /* */                                                                      \
+    double elapsed = 0.0;                                                      \
+    struct timespec before, after;                                             \
+                                                                               \
+    /* */                                                                      \
+    double number_of_ite = N_MAX / size;                                       \
+                                                                               \
+    /* */                                                                      \
+    do                                                                         \
+      {                                                                        \
+        /* */                                                                  \
+        clock_gettime(CLOCK_MONOTONIC_RAW, &before);                           \
+        {                                                                      \
+          for (int i = 0; i < number_of_ite; i++)                              \
+            {                                                                  \
+              c = a op b;                                                      \
+            }                                                                  \
+        }                                                                      \
+        clock_gettime(CLOCK_MONOTONIC_RAW, &after);                            \
+                                                                               \
+        /* */                                                                  \
+        elapsed = (double)(after.tv_nsec - before.tv_nsec);                    \
+                                                                               \
+      }                                                                        \
+    while (elapsed < 0.0);                                                     \
+                                                                               \
+    /* elapsed time in seconds */                                              \
+    double elapsed_sec = elapsed / GIGA;                                       \
+                                                                               \
+    /* Compute gflops */                                                       \
+    double gflops = (N_MAX / MEGA) / elapsed_sec;                              \
+                                                                               \
+    return gflops;                                                             \
+  }
+
+define_run_op_floatX(2, +, add);
+define_run_op_floatX(2, -, sub);
+define_run_op_floatX(2, *, mul);
+define_run_op_floatX(2, /, div);
+
+define_run_op_floatX(4, +, add);
+define_run_op_floatX(4, -, sub);
+define_run_op_floatX(4, *, mul);
+define_run_op_floatX(4, /, div);
+
+#if __AVX__
+define_run_op_floatX(8, +, add);
+define_run_op_floatX(8, -, sub);
+define_run_op_floatX(8, *, mul);
+define_run_op_floatX(8, /, div);
+#endif
+
+//
+void sort(double *a, unsigned n)
 {
   //
-  float a = (float)x;
-  float b = (float)y;
-  float c = 0.0;
+  for (unsigned i = 0; i < n; i++)
+    for (unsigned j = i + 1; j < n; j++)
+      if (a[i] > a[j])
+        {
+          double tmp = a[i];
 
-  //
-  double total_time = 0.0;
-  double elapsed = 0.0;
-  struct timespec before, after;
-
-  //
-  double number_of_ite = N_MAX;
-
-  //
-  do
-    {
-      //
-      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
-      {
-        for (int i = 0; i < number_of_ite; i++)
-          {
-            c = a + b;
-          }
-      }
-      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
-
-      //
-      elapsed = after.tv_nsec - before.tv_nsec;
-
-    }
-  while (elapsed < 0.0);
-
-  //
-  total_time = elapsed;
-
-  // Mean
-  double mean_time = total_time / N_MAX;
-
-  // Nanosecond to second
-  double mean_time_sec = mean_time / 1.0e9;
-
-  // Compute size
-  double total_size = 3 * sizeof(float) * number_of_ite;
-  double total_size_gib = total_size / (1024 * 1024 * 1024);
-
-  // Compute gibs
-  double gibs = total_size_gib / mean_time_sec;
-
-  // Print bandwidth
-  fprintf(stderr, "add_float; %f\n", gibs);
-
-  return gibs;
+          a[i] = a[j];
+          a[j] = tmp;
+        }
 }
 
-double run_add_float2(double x, double y)
+//
+double mean(double *a, unsigned n)
 {
   //
-  float2 a = (float)x;
-  float2 b = (float)y;
-  float2 c = 0.0;
+  double m = 0.0;
 
   //
-  double total_time = 0.0;
-  double elapsed = 0.0;
-  struct timespec before, after;
+  for (unsigned i = 0; i < n; i++)
+    m += a[i];
 
   //
-  double number_of_ite = N_MAX / 2;
-
-  //
-  do
-    {
-      //
-      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
-      {
-        for (int i = 0; i < number_of_ite; i++)
-          {
-            c = a + b;
-          }
-      }
-      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
-
-      //
-      elapsed = after.tv_nsec - before.tv_nsec;
-
-    }
-  while (elapsed < 0.0);
-
-  //
-  total_time = elapsed;
-
-  // Mean
-  double mean_time = total_time / N_MAX;
-
-  // Nanosecond to second
-  double mean_time_sec = mean_time / 1.0e9;
-
-  // Compute size
-  double total_size = 3 * sizeof(float2) * number_of_ite;
-  double total_size_gib = total_size / (1024 * 1024 * 1024);
-
-  // Compute gibs
-  double gibs = total_size_gib / mean_time_sec;
-
-  // Print bandwidth
-  fprintf(stderr, "add_float2; %f\n", gibs);
-
-  return gibs;
+  return m / (double)n;
 }
 
-double run_add_float4(double x, double y)
+//
+double stddev(double *a, unsigned n)
 {
   //
-  float4 a = (float)x;
-  float4 b = (float)y;
-  float4 c = 0.0;
+  double d = 0.0;
+  double m = mean(a, n);
+  
+  //
+  for (unsigned i = 0; i < n; i++)
+    d += (a[i] - m) * (a[i] - m);
 
   //
-  double total_time = 0.0;
-  double elapsed = 0.0;
-  struct timespec before, after;
-
+  d /= (double)(n - 1);
+  
   //
-  double number_of_ite = N_MAX / 4;
-
-  //
-  do
-    {
-      //
-      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
-      {
-        for (int i = 0; i < number_of_ite; i++)
-          {
-            c = a + b;
-          }
-      }
-      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
-
-      //
-      elapsed = after.tv_nsec - before.tv_nsec;
-
-    }
-  while (elapsed < 0.0);
-
-  //
-  total_time = elapsed;
-
-  // Mean
-  double mean_time = total_time / N_MAX;
-
-  // Nanosecond to second
-  double mean_time_sec = mean_time / 1.0e9;
-
-  // Compute size
-  double total_size = 3 * sizeof(float4) * number_of_ite;
-  double total_size_gib = total_size / (1024 * 1024 * 1024);
-
-  // Compute gibs
-  double gibs = total_size_gib / mean_time_sec;
-
-  // Print bandwidth
-  fprintf(stderr, "add_float4; %f\n", gibs);
-
-  return gibs;
+  return sqrt(d);
 }
 
-double run_add_float8(double x, double y)
-{
-  //
-  float8 a = (float)x;
-  float8 b = (float)y;
-  float8 c = 0.0;
+#if __AVX__
+#define define_speedup(name)                                                   \
+  void speedup_##name(double x, double y)                                      \
+  {                                                                            \
+    double baseline[SAMPLE];                                                   \
+    double gflops_2x[SAMPLE];                                                  \
+    double gflops_4x[SAMPLE];                                                  \
+    double gflops_8x[SAMPLE];                                                  \
+                                                                               \
+    for (int i = 0; i < SAMPLE; i++)                                           \
+      {                                                                        \
+        baseline[i] = run_##name##_float(x, y);                                \
+        gflops_2x[i] = run_##name##_float2(x, y);                              \
+        gflops_4x[i] = run_##name##_float4(x, y);                              \
+        gflops_8x[i] = run_##name##_float8(x, y);                              \
+      }                                                                        \
+                                                                               \
+    sort(baseline, SAMPLE);                                                    \
+    sort(gflops_2x, SAMPLE);                                                   \
+    sort(gflops_4x, SAMPLE);                                                   \
+    sort(gflops_8x, SAMPLE);                                                   \
+                                                                               \
+    double mean_baseline = mean(baseline, SAMPLE);                             \
+    double mean_gflops_2x = mean(gflops_2x, SAMPLE);                           \
+    double mean_gflops_4x = mean(gflops_4x, SAMPLE);                           \
+    double mean_gflops_8x = mean(gflops_8x, SAMPLE);                           \
+                                                                               \
+    double stddev_baseline = stddev(baseline, SAMPLE);                         \
+    double stddev_gflops_2x = stddev(gflops_2x, SAMPLE);                       \
+    double stddev_gflops_4x = stddev(gflops_4x, SAMPLE);                       \
+    double stddev_gflops_8x = stddev(gflops_8x, SAMPLE);                       \
+                                                                               \
+    double stddevp_baseline = (stddev_baseline * 100) / mean_baseline;         \
+    double stddevp_gflops_2x = (stddev_gflops_2x * 100) / mean_gflops_2x;      \
+    double stddevp_gflops_4x = (stddev_gflops_4x * 100) / mean_gflops_4x;      \
+    double stddevp_gflops_8x = (stddev_gflops_8x * 100) / mean_gflops_8x;      \
+                                                                               \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float", mean_baseline,    \
+            1.0, stddevp_baseline);                                            \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float2", mean_gflops_2x,  \
+            mean_gflops_2x / mean_baseline, stddevp_gflops_2x);                \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float4", mean_gflops_4x,  \
+            mean_gflops_4x / mean_baseline, stddevp_gflops_4x);                \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float8", mean_gflops_8x,  \
+            mean_gflops_8x / mean_baseline, stddevp_gflops_8x);                \
+  }
+#else
+#define define_speedup(name)                                                   \
+  void speedup_##name(double x, double y)                                      \
+  {                                                                            \
+    double baseline[SAMPLE];                                                   \
+    double gflops_2x[SAMPLE];                                                  \
+    double gflops_4x[SAMPLE];                                                  \
+                                                                               \
+    for (int i = 0; i < SAMPLE; i++)                                           \
+      {                                                                        \
+        baseline[i] = run_##name##_float(x, y);                                \
+        gflops_2x[i] = run_##name##_float2(x, y);                              \
+        gflops_4x[i] = run_##name##_float4(x, y);                              \
+      }                                                                        \
+                                                                               \
+    double mean_baseline = mean(baseline, SAMPLE);                             \
+    double mean_gflops_2x = mean(gflops_2x, SAMPLE);                           \
+    double mean_gflops_4x = mean(gflops_4x, SAMPLE);                           \
+                                                                               \
+    double stddev_baseline = stddev(baseline, SAMPLE);                         \
+    double stddev_gflops_2x = stddev(gflops_2x, SAMPLE);                       \
+    double stddev_gflops_4x = stddev(gflops_4x, SAMPLE);                       \
+                                                                               \
+    double stddevp_baseline = (stddev_baseline * 100) / mean_baseline;         \
+    double stddevp_gflops_2x = (stddev_gflops_2x * 100) / mean_gflops_2x;      \
+    double stddevp_gflops_4x = (stddev_gflops_4x * 100) / mean_gflops_4x;      \
+                                                                               \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float", mean_baseline,    \
+            1.0, stddevp_baseline);                                            \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float2", mean_gflops_2x,  \
+            mean_gflops_2x / mean_baseline, stddevp_gflops_2x);                \
+    fprintf(stderr, "%s%s; %f; %f; %f%%\n", #name, "_float4", mean_gflops_4x,  \
+            mean_gflops_4x / mean_baseline, stddevp_gflops_4x);                \
+    fprintf(stderr, "%s%s; %f; %f %f%%\n", #name, "_float8", 0.0, 0.0, 0.0);   \
+  }
+#endif
 
-  //
-  double total_time = 0.0;
-  double elapsed = 0.0;
-  struct timespec before, after;
-
-  //
-  double number_of_ite = N_MAX / 8;
-
-  //
-  do
-    {
-      //
-      clock_gettime(CLOCK_MONOTONIC_RAW, &before);
-      {
-        for (int i = 0; i < number_of_ite; i++)
-          {
-            c = a + b;
-          }
-      }
-      clock_gettime(CLOCK_MONOTONIC_RAW, &after);
-
-      //
-      elapsed = after.tv_nsec - before.tv_nsec;
-
-    }
-  while (elapsed < 0.0);
-
-  //
-  total_time = elapsed;
-
-  // Mean
-  double mean_time = total_time / N_MAX;
-
-  // Nanosecond to second
-  double mean_time_sec = mean_time / 1.0e9;
-
-  // Compute size
-  double total_size = 3 * sizeof(float8) * number_of_ite;
-  double total_size_gib = total_size / (1024 * 1024 * 1024);
-
-  // Compute gibs
-  double gibs = total_size_gib / mean_time_sec;
-
-  // Print bandwidth
-  fprintf(stderr, "add_float8; %f\n", gibs);
-
-  return gibs;
-}
+define_speedup(add);
+define_speedup(sub);
+define_speedup(mul);
+define_speedup(div);
 
 int main(int argc, char **argv)
 {
@@ -242,14 +273,10 @@ int main(int argc, char **argv)
   double x = strtod(argv[1], NULL);
   double y = strtod(argv[2], NULL);
 
-  double baseline = run_add_float(x, y);
-  double gibs_2x = run_add_float2(x, y);
-  double gibs_4x = run_add_float4(x, y);
-  double gibs_8x = run_add_float8(x, y);
-
-  fprintf(stderr, "add_float2; %f\n", gibs_2x / baseline);
-  fprintf(stderr, "add_float4; %f\n", gibs_4x / baseline);
-  fprintf(stderr, "add_float8; %f\n", gibs_8x / baseline);
+  speedup_add(x, y);
+  speedup_sub(x, y);
+  speedup_mul(x, 1.0);
+  speedup_div(x, 1.0);
 
   return 0;
 }

@@ -1,0 +1,16 @@
+add_float; 1.0
+add_float2; 0.903276
+add_float4; 1.365370
+add_float8; 2.130997
+sub_float; 1.0
+sub_float2; 0.914061
+sub_float4; 1.365611
+sub_float8; 2.161324
+mul_float; 1.0
+mul_float2; 0.988687
+mul_float4; 1.451850
+mul_float8; 2.171770
+div_float; 1.0
+div_float2; 0.903431
+div_float4; 1.369233
+div_float8; 2.144999

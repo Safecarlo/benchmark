@@ -23,7 +23,7 @@ $ cd benchmark
    You must ensure that you have the Verificarlo version on *master branch*.
 
 #+BEGIN_SRC shell
-$ ./run.sh
+$ ./run.sh [CORE ID]
 $ ./prefix.sh serial
 #+END_SRC
 
@@ -33,16 +33,17 @@ $ ./prefix.sh serial
    branch in Safecarlo*.
 
 #+BEGIN_SRC shell
-$ ./run.sh
+$ ./run.sh [CORE ID]
 $ ./prefix.sh vector
 #+END_SRC
 
 ** Speedup
 
-   Now you can compute speedup.
+   Now you can compute speedup between *serial* version and *vector*
+   version. Note that *serial* vesion is taken as baseline.
 
 #+BEGIN_SRC shell
-$ ./sp.sh
+$ ./speedup.sh
 #+END_SRC
 
 ** Plotting
@@ -51,4 +52,4 @@ $ ./sp.sh
 $ gnuplot plot.gp
 #+END_SRC
 
-* Benchmark
+
