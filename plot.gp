@@ -1,37 +1,36 @@
-set term png size 1900,1000 noenhanced font "Terminal,11"
+set term png size 1900,1000 noenhanced font "Terminal,12"
 
-set datafile separator ";"
+set datafile separator ";"             # set separator to ;
 
-set grid
+set grid ytics                         # only horizontal grid (y)
 
 set auto x
 
-set key right top
-
-set xlabel "Vector size variants"
+set key right top                      # legend
 
 set style data histogram
 set style fill solid border -1
 set boxwidth 0.9
 
+set ylabel font "Deja Vu,14"
+
 set key spacing 1.5
 set key box lt -1 lw 2
 
-set xtic rotate by -45 scale 0
+set xtic rotate by 45 right scale 0
 
 set border linewidth 2
-#set terminal png background "#1b1c1d"
 
 # IEEE BACKEND
 
 set output "ieee.png"
 set multiplot layout 2, 2 rowsfirst
 
-set title "Bandwidth of IEEE Backend"
+set title "Bandwidth of IEEE Backend" font "Deja Vu,20"
 
 set yrange[0:300]
 
-set ylabel "Bandwidth in MFLOP Per Second (higher is better)"
+set ylabel "Bandwidth in MFLOP/s (higher is better)"
 plot "serial_ieee.txt" u 2:xtic(1) t "Master branch",                  \
      "vector_ieee.txt" u 2:xtic(1) t "Vector branch"
 
@@ -40,8 +39,8 @@ set title "Speedup of IEEE Backend"
 set yrange[0:8]
 
 set ylabel "Speedup in % (higher is better)"
-plot "serial_ieee.txt" u 3:xtic(1) t "Serial floatX / Serial float",           \
-     "vector_ieee.txt" u 3:xtic(1) t "Vector floatX / Serial float",           \
+plot "serial_ieee.txt" u 3:xtic(1) t "Serial floatX / float",           \
+     "vector_ieee.txt" u 3:xtic(1) t "Vector floatX / float",           \
      "ieee_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial floatX"
 
 unset multiplot
@@ -57,7 +56,7 @@ set title "Bandwidth of VPREC Backend with Normal number"
 
 set yrange[0:150]
 
-set ylabel "Bandwidth in MFLOP Per Second (higher is better)"
+set ylabel "Bandwidth in MFLOP/s (higher is better)"
 plot "serial_vprec_normal.txt" u 2:xtic(1) t "Master branch",          \
      "vector_vprec_normal.txt" u 2:xtic(1) t "Vector branch"
 
@@ -66,8 +65,8 @@ set title "Speedup of VPREC Backend with Normal number"
 set yrange[0:8]
 
 set ylabel "Speedup in % (higher is better)"
-plot "serial_vprec_normal.txt" u 3:xtic(1) t "Serial floatX / Serial float",   \
-     "vector_vprec_normal.txt" u 3:xtic(1) t "Vector floatX / Vector float",   \
+plot "serial_vprec_normal.txt" u 3:xtic(1) t "Serial floatX / float",   \
+     "vector_vprec_normal.txt" u 3:xtic(1) t "Vector floatX / float",   \
      "vprec_normal_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial floatX"
 
 ## denormal
@@ -75,7 +74,7 @@ set title "Bandwidth of VPREC Backend with Denormal number"
 
 set yrange[0:150]
 
-set ylabel "Bandwidth in MFLOP Per Second (higher is better)"
+set ylabel "Bandwidth in MFLOP/s (higher is better)"
 plot "serial_vprec_denormal.txt" u 2:xtic(1) t "Master branch",        \
      "vector_vprec_denormal.txt" u 2:xtic(1) t "Vector branch"
 
@@ -84,8 +83,8 @@ set title "Speedup of VPREC Backend with Denormal number"
 set yrange[0:8]
 
 set ylabel "Speedup in % (higher is better)"
-plot "serial_vprec_denormal.txt" u 3:xtic(1) t "Serial floatX / Serial float", \
-     "vector_vprec_denormal.txt" u 3:xtic(1) t "Vector floatX / Vector float", \
+plot "serial_vprec_denormal.txt" u 3:xtic(1) t "Serial floatX / float", \
+     "vector_vprec_denormal.txt" u 3:xtic(1) t "Vector floatX / float", \
      "vprec_denormal_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial floatX"
 
 unset multiplot
@@ -98,7 +97,7 @@ set title "Bandwidth of VPREC Backend with Normal number in Vector branch"
 
 set yrange[0:150]
 
-set ylabel "Bandwidth in MFLOP Per Second (higher is better)"
+set ylabel "Bandwidth in MFLOP/s (higher is better)"
 plot "normal_serial_vprec_normal.txt" u 2:xtic(1) t "Serial implementation",   \
      "vector_vprec_normal.txt" u 2:xtic(1) t "Vector implementation"
 
@@ -107,8 +106,8 @@ set title "Speedup of VPREC Backend with Normal number in Vector branch"
 set yrange[0:8]
 
 set ylabel "Speedup in % (higher is better)"
-plot "normal_serial_vprec_normal.txt" u 3:xtic(1) t "Serial floatX / Serial float", \
-     "vector_vprec_normal.txt" u 3:xtic(1) t "Vector floatX / Vector float",        \
+plot "normal_serial_vprec_normal.txt" u 3:xtic(1) t "Serial floatX / float", \
+     "vector_vprec_normal.txt" u 3:xtic(1) t "Vector floatX / float",        \
      "serial_vprec_normal_speedup.txt" u 2:xtic(1) t "Vector floatX / Serial floatX"
 
 unset multiplot
@@ -127,7 +126,7 @@ set yrange[0:100]
 
 set ylabel "Standard deviation in % (lower is better)"
 plot "serial_ieee.txt" u 4:xtic(1) t "Master branch",                  \
-     "vector_ieee.txt" u 4:xtic(1) t "Vector branch"
+     "vector_ieee.txt" u 4:xtic(1) t "Vector branch",
 
 # VPREC BACKEND
 
